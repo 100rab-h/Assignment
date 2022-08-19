@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Retrieve all non indexed column names from JPDB database</h2>
+        <form id="empForm" method="post">
+            <input type="text" id="db" name="db" placeholder="Enter DataBase Name" class="form-control" required>
+            <p></p>
+            <input type="text" id="relation" name="relation" placeholder="Enter Relation Name" class="form-control"
+                required>
+            <p></p>
+            <input type="button" class="btn btn-primary" value="Show Stats" onclick="getstats();">
+
+        </form>
+    </div>
+
+
+    <script>
+
+        $("#db").focus();
+        function validateAndGetFormData() {
+            var dbVar = $("#db").val();
+            if (dbVar === "") {
+                alert("Database name is Required");
+                $("#db").focus();
+                return "";
+            }
+            var relationVar = $("#relation").val();
+            if (relationVar === "") {
+                alert("Relation Name is Required Value");
+                $("#relation").focus();
+                return "";
+            }
+            var jsonStrObj = {
+                dbName: dbVar,
+                rel: relationVar
+            };
+            return JSON.stringify(jsonStrObj);
+        }
+
+        function executeCommand(reqString, dbBaseUrl, apiEndPointUrl) {
+            var url = dbBaseUrl + apiEndPointUrl;
+            var jsonObj;
+            $.post(url, reqString, function (result) {
+                jsonObj = JSON.parse(result);
+            }).fail(function (result) {
+                var dataJsonObj = result.responseText;
+                jsonObj = JSON.parse(dataJsonObj);
+            });
+            return jsonObj;
+        }
+
+        function resetForm() {
+            $("#db").val("")
+            $("#relation").val("");
+            $("#db").focus();
+        }
+
+        function createGETRequest(token, dbname, relationName) {
+            var value1 = "{\n"
+                + "\"token\" : \""
+                + token
+                + "\",\n" + "\"cmd\" : \"GET_NON_INDEXED_COL\",\n"
+                + "\"dbName\": \""
+                + dbname
+                + "\",\n"
+                + "\"rel\" : \""
+                + relationName
+                + "\"\n"
+                + "}";
+            return value1;
+        }
+
+        function getstats() {
+            var jsonStr = validateAndGetFormData();
+            if (jsonStr === "") {
+                return;
+            }
+
+            var getReqStr = createGETRequest("90937502|-31949291089260943|90942846",
+                String(document.getElementById("db").value), String(document.getElementById("relation").value));
+            alert(getReqStr);
+            jQuery.ajaxSetup({ async: false });
+            var resultObj = executeCommand(getReqStr,
+                "http://api.login2explore.com:5577", "/api/irl");
+            alert(JSON.stringify(resultObj));
+            jQuery.ajaxSetup({ async: true });
+            resetForm();
+        }        
+    </script>
+    <p></p>
+    <div class="container">
+        <button class="btn btn-primary" onclick="location.href='../index.html'">Home</button>
+    </div>
+
+</body>
+
+</html>

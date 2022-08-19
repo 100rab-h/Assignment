@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Check wether Database Exist or not</h2>
+        <form id="empForm" method="post">
+            <input type="text" id="dbName" name="dbName" placeholder="Enter the name of the DataBase"
+                class="form-control">
+            <p></p>
+            <input type="button" class="btn btn-primary" value="Check" onclick="check();">
+
+        </form>
+    </div>
+
+
+    <script>
+        function validateAndGetFormData() {
+            var dbNameVar = $("#dbName").val();
+            if (dbNameVar === "") {
+                alert("Database Name is a required value!");
+                $("#dbName").focus();
+                return "";
+            }
+            var jsonStrObj = {
+                db : dbNameVar,
+            };
+            return JSON.stringify(jsonStrObj);
+        }
+
+        function resetForm() {
+            $("#dbName").val("");
+            $("#dbName").focus();
+        }
+
+        function executeCommand(reqString, dbBaseUrl, apiEndPointUrl) {
+            var url = dbBaseUrl + apiEndPointUrl;
+            var jsonObj;
+            $.post(url, reqString, function (result) {
+                jsonObj = JSON.parse(result);
+            }).fail(function (result) {
+                var dataJsonObj = result.responseText;
+                jsonObj = JSON.parse(dataJsonObj);
+            });
+            return jsonObj;
+        }
+
+        function createGETRequest(token, dbname) {
+            var value1 = "{\n"
+                + "\"token\" : \""
+                + token
+                + "\",\n" + "\"cmd\" : \"IS_DATABASE_EXISTS\",\n"
+                + "\"dbName\": \""
+                + dbname
+                + "\"\n"
+                + "}";
+            return value1;
+        }
+
+        function check() {
+            var jsonStr = validateAndGetFormData();
+            if (jsonStr === "") {
+                return;
+            }
+            var getReqStr = createGETRequest("90937502|-31949291089260943|90942846", String(document.getElementById("dbName").value));
+            alert(getReqStr);
+            jQuery.ajaxSetup({ async: false });
+            var resultObj = executeCommand(getReqStr,
+                "http://api.login2explore.com:5577", "/api/irl");
+            alert(JSON.stringify(resultObj));
+            jQuery.ajaxSetup({ async: true });
+            resetForm();
+        }        
+    </script>
+
+    <p></p>
+    <div class="container">
+        <button class="btn btn-primary" onclick="location.href='../index.html'">Home</button>
+    </div>
+
+</body>
+
+</html>

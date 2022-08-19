@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+    <div class="container">
+        <h2>Retrieve single record by json data</h2>
+        <h3>Key - empEmail, empId, empName</h3>
+        <form id="empForm" method="post">
+            <div class="form-group">
+                <input type="text" id="empKey" name="empKey"
+                    placeholder="Enter the Key to be fetched" class="form-control" required>
+                <p></p>
+                <input type="text" id="val" name="val"
+                    placeholder="Enter the Key's Value" class="form-control">
+                <p></p>
+                <input type="button" class="btn btn-primary" id="retrievebtn" value="Retrieve record"
+                    onclick="retrieveRecord();">
+            </div>
+
+        </form>
+    </div>
+
+
+    <script>
+        $("#empKey").focus();
+        function validateAndGetFormData() {
+            var empKeyVar = $("#empKey").val();
+            if (empKeyVar === "") {
+                alert("Key is a required Value");
+                $("#empKey").focus();
+                return "";
+            }
+
+            var valVar = $("#val").val();
+            if (valVar === "") {
+                alert("Key's Value is a required Value");
+                $("#val").focus();
+                return "";
+            }
+
+            var jsonStrObj = {
+                empKeyVar : valVar,
+            };
+            return JSON.stringify(jsonStrObj);
+        }
+
+        function resetForm() {
+            $("#empKey").val("");
+            $("#val").val("");
+            $("#empKey").focus();
+        }
+
+        function createRetrieveRecordRequest(token, dbName, relName, key, val) {
+            var req = "{\n"
+                + "\"token\" : \""
+                + token
+                + "\",\n"
+                + "\"dbName\": \""
+                + dbName
+                + "\",\n" + "\"cmd\" : \"FIND_ALL_RECORDS\",\n"
+                + "\"rel\" : \""
+                + relName
+                + "\",\n"
+                + "\"jsonStr\":{ \""
+                + key
+                + "\": \""
+                + val
+                + "\""
+                + "\n"
+                + "}}";
+            return req;
+        }
+        function executeCommand(reqString, dbBaseUrl, apiEndPointUrl) {
+            var url = dbBaseUrl + apiEndPointUrl;
+            var jsonObj;
+            $.post(url, reqString, function (result) {
+                jsonObj = JSON.parse(result);
+            }).fail(function (result) {
+                var dataJsonObj = result.responseText;
+                jsonObj = JSON.parse(dataJsonObj);
+            });
+            return jsonObj;
+        }
+
+
+        function retrieveRecord() {
+            var jsonStr = validateAndGetFormData();
+            if (jsonStr === "") {
+                return;
+            }
+
+
+
+
+            var retrieveReqStr = createRetrieveRecordRequest("90937502|-31949291089260943|90942846", "EMPLOYEE", "EMP-REL", String(document.getElementById("empKey").value), String(document.getElementById("val").value));
+            alert(retrieveReqStr);
+            jQuery.ajaxSetup({ async: false });
+            var resultObj = executeCommand(retrieveReqStr,
+                "http://api.login2explore.com:5577", "/api/irl");
+            alert(JSON.stringify(resultObj));
+            jQuery.ajaxSetup({ async: true });
+            resetForm();
+        }
+    </script>
+    <div class="container">
+        <button class="btn btn-primary" onclick="location.href='../index.html'">Home</button>
+    </div>
+
+</body>
+
+</html>
