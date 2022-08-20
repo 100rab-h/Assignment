@@ -34,3 +34,14 @@
 ![Database Sync](https://github.com/100rab-h/Assignment/blob/master/Screenshots/sync_db.png)
 ![All relation](https://github.com/100rab-h/Assignment/blob/master/Screenshots/get_all_relation.png)
 
+## Test Database:
+- EMPLOYEE
+  - EMP-REL
+- SAMPLE
+  - EMP-REL
+- Student
+  - Student-Rel
+  
+ You can use these test cases to test the code with given token.
+ 
+ ## Thank you.
