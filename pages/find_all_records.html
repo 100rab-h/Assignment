@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>FIND_ALL_RECORDS</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -14,15 +14,19 @@
 
 <body>
     <div class="container">
-        <h2>Retrieve single record by json data</h2>
-        <h3>Key - empEmail, empId, empName</h3>
+        <h2>Retrieve all record by json data</h2>
+        <!-- <h3>Key - empEmail, empId, empName</h3> -->
         <form id="empForm" method="post">
             <div class="form-group">
-                <input type="text" id="empKey" name="empKey"
-                    placeholder="Enter the Key to be fetched" class="form-control" required>
+                <input type="text" id="db" name="db" placeholder="Enter DataBase Name" class="form-control" required>
                 <p></p>
-                <input type="text" id="val" name="val"
-                    placeholder="Enter the Key's Value" class="form-control">
+                <input type="text" id="relation" name="relation" placeholder="Enter Relation Name" class="form-control"
+                    required>
+                <p></p>
+                <input type="text" id="empKey" name="empKey" placeholder="Enter the Key to be fetched"
+                    class="form-control" required>
+                <p></p>
+                <input type="text" id="val" name="val" placeholder="Enter the Key's Value" class="form-control">
                 <p></p>
                 <input type="button" class="btn btn-primary" id="retrievebtn" value="Retrieve record"
                     onclick="retrieveRecord();">
@@ -33,8 +37,20 @@
 
 
     <script>
-        $("#empKey").focus();
+        $("#db").focus();
         function validateAndGetFormData() {
+            var dbVar = $("#db").val();
+            if (dbVar === "") {
+                alert("Database name is Required");
+                $("#db").focus();
+                return "";
+            }
+            var relationVar = $("#relation").val();
+            if (relationVar === "") {
+                alert("Relation Name is Required Value");
+                $("#relation").focus();
+                return "";
+            }
             var empKeyVar = $("#empKey").val();
             if (empKeyVar === "") {
                 alert("Key is a required Value");
@@ -50,15 +66,17 @@
             }
 
             var jsonStrObj = {
-                empKeyVar : valVar,
+                empKeyVar: valVar,
             };
             return JSON.stringify(jsonStrObj);
         }
 
         function resetForm() {
+            $("#db").val("")
+            $("#relation").val("");
             $("#empKey").val("");
             $("#val").val("");
-            $("#empKey").focus();
+            $("#db").focus();
         }
 
         function createRetrieveRecordRequest(token, dbName, relName, key, val) {
@@ -103,7 +121,7 @@
 
 
 
-            var retrieveReqStr = createRetrieveRecordRequest("90937502|-31949291089260943|90942846", "EMPLOYEE", "EMP-REL", String(document.getElementById("empKey").value), String(document.getElementById("val").value));
+            var retrieveReqStr = createRetrieveRecordRequest("90937502|-31949291089260943|90942846", String(document.getElementById("db").value), String(document.getElementById("relation").value), String(document.getElementById("empKey").value), String(document.getElementById("val").value));
             alert(retrieveReqStr);
             jQuery.ajaxSetup({ async: false });
             var resultObj = executeCommand(retrieveReqStr,

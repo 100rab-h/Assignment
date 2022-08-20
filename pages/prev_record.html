@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Remove</title>
+    <title>PREV_RECORD</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -17,8 +17,12 @@
         <h2>Previous Record</h2>
         <form id="empForm" method="post">
             <div class="form-group">
-                <input type="text" id="index" name="index" placeholder="Enter the Record No"
-                    class="form-control">
+                <input type="text" id="db" name="db" placeholder="Enter DataBase Name" class="form-control" required>
+                <p></p>
+                <input type="text" id="relation" name="relation" placeholder="Enter Relation Name" class="form-control"
+                    required>
+                <p></p>
+                <input type="text" id="index" name="index" placeholder="Enter the Record No" class="form-control">
                 <p></p>
                 <input type="button" class="btn btn-primary" id="delbtn" value="Retrieve record"
                     onclick="retrievePrevRecord();">
@@ -29,8 +33,20 @@
 
 
     <script>
-        $("#index").focus();
+        $("#db").focus();
         function validateAndGetFormData() {
+            var dbVar = $("#db").val();
+            if (dbVar === "") {
+                alert("Database name is Required");
+                $("#db").focus();
+                return "";
+            }
+            var relationVar = $("#relation").val();
+            if (relationVar === "") {
+                alert("Relation Name is Required Value");
+                $("#relation").focus();
+                return "";
+            }
             var indVar = $("#index").val();
             if (indVar === "") {
                 alert("Index is a required Value");
@@ -44,8 +60,10 @@
         }
 
         function resetForm() {
+            $("#db").val("")
+            $("#relation").val("");
             $("#index").val("");
-            $("#index").focus();
+            $("#db").focus();
         }
 
         function createREMOVERecordRequest(token, dbName, relName, reqId) {
@@ -86,7 +104,7 @@
 
 
 
-            var retrieveReqStr = createREMOVERecordRequest("90937502|-31949291089260943|90942846", "EMPLOYEE", "EMP-REL", parseInt(document.getElementById("index").value));
+            var retrieveReqStr = createREMOVERecordRequest("90937502|-31949291089260943|90942846", String(document.getElementById("db").value), String(document.getElementById("relation").value), parseInt(document.getElementById("index").value));
             alert(retrieveReqStr);
             jQuery.ajaxSetup({ async: false });
             var resultObj = executeCommand(retrieveReqStr,
@@ -99,7 +117,7 @@
     <div class="container">
         <button class="btn btn-primary" onclick="location.href='../index.html'">Home</button>
     </div>
-    
+
 </body>
 
 </html>

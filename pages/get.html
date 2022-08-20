@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>GET</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -17,8 +17,15 @@
     <div class="container">
         <h2>Retrieve a record</h2>
         <form id="empForm" method="post">
-            <input type="text" id="empName" name="empName"
-                placeholder="Enter the name of the employee whose record is to be fetched" class="form-control">
+            <input type="text" id="db" name="db" placeholder="Enter DataBase Name" class="form-control" required>
+            <p></p>
+            <input type="text" id="relation" name="relation" placeholder="Enter Relation Name" class="form-control"
+                required>
+            <p></p>
+            <input type="text" id="empKey" name="empKey" placeholder="Enter the Key to be fetched" class="form-control"
+                required>
+            <p></p>
+            <input type="text" id="val" name="val" placeholder="Enter the Key's Value" class="form-control">
             <p></p>
             <input type="button" class="btn btn-primary" value="Fetch Record" onclick="getEmployee();">
 
@@ -27,6 +34,40 @@
 
 
     <script>
+        $("#db").focus();
+        function validateAndGetFormData() {
+            var dbVar = $("#db").val();
+            if (dbVar === "") {
+                alert("Database name is Required");
+                $("#db").focus();
+                return "";
+            }
+            var relationVar = $("#relation").val();
+            if (relationVar === "") {
+                alert("Relation Name is Required Value");
+                $("#relation").focus();
+                return "";
+            }
+            var empKeyVar = $("#empKey").val();
+            if (empKeyVar === "") {
+                alert("Key is a required Value");
+                $("#empKey").focus();
+                return "";
+            }
+
+            var valVar = $("#val").val();
+            if (valVar === "") {
+                alert("Key's Value is a required Value");
+                $("#val").focus();
+                return "";
+            }
+
+            var jsonStrObj = {
+                index: index,
+            };
+            return JSON.stringify(jsonStrObj);
+        }
+
         function validateAndGetFormData() {
             var empNameVar = $("#empName").val();
             if (empNameVar === "") {
@@ -41,8 +82,11 @@
         }
 
         function resetForm() {
-            $("#empName").val("");
-            $("#empName").focus();
+            $("#db").val("");
+            $("#relation").val("");
+            $("#empKey").val("");
+            $("#val").val("");
+            $("#id").focus();
         }
 
         function executeCommand(reqString, dbBaseUrl, apiEndPointUrl) {
@@ -57,7 +101,7 @@
             return jsonObj;
         }
 
-        function createGETRequest(token, dbname, relationName, jsonObjStr) {
+        function createGETRequest(token, dbname, relationName, key, val) {
             var value1 = "{\n"
                 + "\"token\" : \""
                 + token
@@ -68,10 +112,14 @@
                 + "\"rel\" : \""
                 + relationName
                 + "\",\n"
-                + "\"jsonStr\":\n"
-                + jsonObjStr
+                + "\"jsonStr\": {\n"
+                + "\""
+                + key
+                + "\" : \""
+                + val   
+                + "\""
                 + "\n"
-                + "}";
+                + "}}";
             return value1;
         }
 
@@ -81,7 +129,7 @@
                 return;
             }
             var getReqStr = createGETRequest("90937502|-31949291089260943|90942846",
-                "EMPLOYEE", "EMP-REL", jsonStr);
+            String(document.getElementById("db").value), String(document.getElementById("relation").value), String(document.getElementById("empKey").value), String(document.getElementById("val").value));
             alert(getReqStr);
             jQuery.ajaxSetup({ async: false });
             var resultObj = executeCommand(getReqStr,
